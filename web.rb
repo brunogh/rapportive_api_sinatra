@@ -4,9 +4,7 @@ require 'json'
 require 'open-uri'
 
 get '/' do
-  "Welcome to the Rapportive API demo!
-  <br><br>
-  Usage: <a href='/api/v1/rapportive/luizfaias@gmail.com'>/api/v1/rapportive/user@email.com</a>"
+  ""
 end
 
 get '/api/v1/rapportive/:email' do
@@ -16,7 +14,8 @@ end
 # Sends a query to the undocumented Rapportive API
 # return json object if valid email
 def call_api(email)
-  status_url = 'https://rapportive.com/login_status?user_email=' + email
+  user = generate_email
+  status_url = 'https://rapportive.com/login_status?user_email=' + user
   profile_url = 'https://profiles.rapportive.com/contacts/email/' + email
 
   # exponential backoff to get session_token
@@ -49,4 +48,9 @@ def exp_backoff(up_to, url, header = {})
       retry
     end
   end
+end
+
+def generate_email(size = 6)
+  charset = %w{ 1 2 3 4 6 7 9 A C D E F G H J K M N P Q R T V W X Y Z a b c d e f g h j k l m p q r s t v z}
+  (0...size).map{ charset.to_a[rand(charset.size)] }.join + '@gmail.com'
 end
